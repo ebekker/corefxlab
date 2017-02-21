@@ -15,7 +15,7 @@ namespace System.IO.Pipelines
         private int _overallIndex;
         private bool _end;
 
-        public ReadableBufferReader(ReadableBuffer buffer): this(buffer.Start, buffer.End)
+        public ReadableBufferReader(ReadableBuffer buffer) : this(buffer.Start, buffer.End)
         {
         }
 
@@ -40,6 +40,8 @@ namespace System.IO.Pipelines
         public bool End => _end;
 
         public int Index => _overallIndex;
+
+        public Span<byte> Span => _currentMemory;
 
         public ReadCursor Cursor
         {
@@ -88,6 +90,29 @@ namespace System.IO.Pipelines
             else
             {
                 _end = true;
+            }
+        }
+
+        public void Skip(int length)
+        {
+            // TODO: check negative length
+
+            check:
+
+            if (_end)
+            {
+                return;
+            }
+
+            if ((_index + length) < _currentMemory.Length)
+            {
+                _index += length;
+            }
+            else
+            {
+                length -= _currentMemory.Length;
+                MoveNext();
+                goto check;
             }
         }
     }
