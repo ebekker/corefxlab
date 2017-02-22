@@ -297,9 +297,8 @@ namespace System.IO.Pipelines
                 return -1;
             }
 
-            return _start.Segment.Memory.Span[_start.Index];
-            //var span = First.Span;
-            //return span[0];
+            var span = First.Span;
+            return span[0];
         }
 
         /// <summary>
